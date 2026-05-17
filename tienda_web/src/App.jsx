@@ -4,6 +4,7 @@ import PrivateRoute from './routes/PrivateRoute'
 import AdminRoute from './routes/AdminRoute'
 import Navbar from './components/Navbar'
 import LoginPage from './pages/LoginPage'
+import LandingPage from './pages/LandingPage'
 import ClientesPage from './pages/ClientesPage'
 import ClienteFormPage from './pages/ClienteFormPage'
 import ProductosPage from './pages/ProductosPage'
@@ -39,11 +40,11 @@ function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
 
         <Route element={<PrivateRoute />}>
           <Route element={<WithNavbar />}>
-            <Route path="/" element={<Navigate to="/clientes" replace />} />
             <Route path="/clientes" element={<ClientesPage />} />
             <Route path="/clientes/nuevo" element={<ClienteFormPage />} />
             <Route path="/clientes/editar/:id" element={<ClienteFormPage />} />
@@ -62,7 +63,7 @@ function App() {
           </Route>
         </Route>
 
-        <Route path="*" element={<Navigate to="/clientes" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>
   )
