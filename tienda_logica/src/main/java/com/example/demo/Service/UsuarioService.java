@@ -21,11 +21,26 @@ public class UsuarioService {
     }
 
     public UsuarioDTO guardar(UsuarioCreateDTO dto) {
+        String username = dto.getUsername() == null ? "" : dto.getUsername().trim();
+        String password = dto.getPassword() == null ? "" : dto.getPassword();
+
+        if (username.isBlank()) {
+            throw new RuntimeException("El usuario es obligatorio");
+        }
+
+        if (password.isBlank() || password.length() < 4) {
+            throw new RuntimeException("La contraseña debe tener al menos 4 caracteres");
+        }
+
+        if (repository.existsByUsername(username)) {
+            throw new RuntimeException("El usuario ya existe");
+        }
+
         Usuario usuario = new Usuario();
-        usuario.setUsername(dto.getUsername());
+        usuario.setUsername(username);
 
         // 🔥 IMPORTANTE: en producción esto debe ir encriptado
-        usuario.setPassword(dto.getPassword());
+        usuario.setPassword(password);
 
         Usuario guardado = repository.save(usuario);
         return toDTO(guardado);
