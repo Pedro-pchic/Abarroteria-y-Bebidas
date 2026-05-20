@@ -5,49 +5,40 @@ export default function Hero() {
     <section className="landing-hero landing-shell" id="inicio">
       <div className="landing-hero-copy">
         <span className="landing-kicker">Bebidas y Abarrotes S.A.</span>
-        <h1>Sistema de Gestión Integral</h1>
+        <h1>Todo para tu tienda y hogar en un solo lugar</h1>
         <p>
-          Optimiza la administración de inventario, ventas, clientes y productos
-          para Bebidas y Abarrotes S.A.
+          Encuentra bebidas, abarrotes, productos basicos y promociones disponibles
+          para tu negocio o familia.
         </p>
 
         <div className="landing-actions">
-          <a href="#caracteristicas" className="landing-button">
-            Comenzar
-          </a>
-          <Link to="/login" className="landing-button landing-button-secondary">
-            Iniciar Sesión
+          <Link to="/productos" className="landing-button">
+            Ver productos
+          </Link>
+          <Link to="/ofertas" className="landing-button landing-button-secondary">
+            Ver ofertas
+          </Link>
+          <Link to="/login" className="landing-button landing-button-outline">
+            Acceso al Sistema
           </Link>
         </div>
       </div>
 
-      <div className="dashboard-preview" aria-hidden="true">
-        <div className="dashboard-preview-top">
-          <span />
-          <span />
-          <span />
+      <div className="store-preview" aria-hidden="true">
+        <div className="store-shelf shelf-top">
+          <span className="bottle bottle-red" />
+          <span className="bottle bottle-blue" />
+          <span className="box box-green" />
+          <span className="box box-yellow" />
         </div>
-        <div className="dashboard-preview-grid">
-          <div className="metric metric-primary">
-            <small>Inventario</small>
-            <strong>500+</strong>
-          </div>
-          <div className="metric">
-            <small>Ventas</small>
-            <strong>1,000+</strong>
-          </div>
-          <div className="chart-card">
-            <span />
-            <span />
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="table-card">
-            <span />
-            <span />
-            <span />
-          </div>
+        <div className="store-shelf shelf-middle">
+          <span className="bag bag-rice">Arroz</span>
+          <span className="bag bag-beans">Frijol</span>
+          <span className="can can-oil">Aceite</span>
+        </div>
+        <div className="store-counter">
+          <strong>Promos</strong>
+          <span>Combos y productos basicos</span>
         </div>
       </div>
     </section>

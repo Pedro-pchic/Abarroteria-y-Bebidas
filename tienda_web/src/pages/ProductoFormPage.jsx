@@ -108,7 +108,7 @@ function ProductoFormPage() {
         setToast({ message: 'Producto creado correctamente.', type: 'success' })
       }
 
-      setTimeout(() => navigate('/productos'), 1200)
+      setTimeout(() => navigate('/productos-admin'), 1200)
     } catch (err) {
       setErrorGeneral(err.response?.data?.message || 'No se pudo guardar el producto.')
       console.error(err)
@@ -134,7 +134,7 @@ function ProductoFormPage() {
 
       <div className="page-header">
         <div>
-          <button className="btn-back" onClick={() => navigate('/productos')}>
+          <button className="btn-back" onClick={() => navigate('/productos-admin')}>
             ← Volver
           </button>
           <h1 className="page-title">{esEdicion ? 'Editar Producto' : 'Nuevo Producto'}</h1>
@@ -229,7 +229,7 @@ function ProductoFormPage() {
             <button
               type="button"
               className="btn btn-ghost"
-              onClick={() => navigate('/productos')}
+              onClick={() => navigate('/productos-admin')}
               disabled={loading}
             >
               Cancelar

@@ -98,7 +98,7 @@ function ProductosPage() {
             Controla precio, stock y proveedor de cada articulo de la tienda.
           </p>
         </div>
-        <button className="btn btn-primary" onClick={() => navigate('/productos/nuevo')}>
+        <button className="btn btn-primary" onClick={() => navigate('/productos-admin/nuevo')}>
           + Nuevo producto
         </button>
       </div>
@@ -169,7 +169,7 @@ function ProductosPage() {
                     : 'Agrega el primer producto para comenzar a vender.'}
                 </p>
                 {!busqueda && (
-                  <button className="btn btn-primary" onClick={() => navigate('/productos/nuevo')}>
+                  <button className="btn btn-primary" onClick={() => navigate('/productos-admin/nuevo')}>
                     + Crear producto
                   </button>
                 )}
@@ -212,7 +212,7 @@ function ProductosPage() {
                       <td className="td-actions">
                         <button
                           className="btn btn-edit"
-                          onClick={() => navigate(`/productos/editar/${producto.id}`)}
+                          onClick={() => navigate(`/productos-admin/editar/${producto.id}`)}
                         >
                           Editar
                         </button>

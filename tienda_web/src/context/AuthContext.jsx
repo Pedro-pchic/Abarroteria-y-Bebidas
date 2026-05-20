@@ -1,22 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
+import api from '../services/api'
 
 const AuthContext = createContext(null)
-const adminUsers = new Set(
-  (import.meta.env.VITE_ADMIN_USERS || '')
-    .split(',')
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean)
-)
 
 function buildUserData(rawUser) {
   if (!rawUser?.username) return rawUser
 
   const username = String(rawUser.username).trim()
-  const role = rawUser.role || (adminUsers.has(username.toLowerCase()) ? 'ADMIN' : 'EMPLEADO')
+  const role = String(rawUser.role || 'VENTAS').trim().toUpperCase()
 
   return {
-    ...rawUser,
     username,
     role,
     isAdmin: role === 'ADMIN',
@@ -29,33 +23,53 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    const saved = localStorage.getItem('user')
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-      if (saved) {
-        setUser(buildUserData(JSON.parse(saved)))
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+      const username = localStorage.getItem('username')
+      const role = localStorage.getItem('role')
+      if (username) {
+        setUser(buildUserData({ username, role }))
+      } else {
+        const saved = localStorage.getItem('user')
+        if (saved) {
+          const savedUser = buildUserData(JSON.parse(saved))
+          localStorage.setItem('username', savedUser.username)
+          localStorage.setItem('role', savedUser.role)
+          localStorage.removeItem('user')
+          setUser(savedUser)
+        }
       }
     }
     setLoading(false)
   }, [])
 
   const login = async (username, password) => {
-    const { data } = await axios.post(
-      `${import.meta.env.VITE_API_URL}/auth/login`,
-      { username, password }
-    )
+    const { data } = await api.post('/auth/login', { username, password })
     const { token } = data
-    const userData = buildUserData({ username })
+    if (!token) throw new Error('Login sin token')
+
+    const userData = buildUserData({
+      username: data.username || username,
+      role: data.role,
+    })
     localStorage.setItem('token', token)
-    localStorage.setItem('user', JSON.stringify(userData))
+    localStorage.setItem('username', userData.username)
+    localStorage.setItem('role', userData.role)
+    localStorage.removeItem('user')
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
     setUser(userData)
   }
 
   const logout = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('username')
+    localStorage.removeItem('role')
     localStorage.removeItem('user')
     delete axios.defaults.headers.common['Authorization']
+    delete api.defaults.headers.common['Authorization']
     setUser(null)
   }
 

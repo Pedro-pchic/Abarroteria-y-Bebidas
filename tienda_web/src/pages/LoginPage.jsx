@@ -1,65 +1,51 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { createUsuario } from '../services/usuarioService'
 
 const LOGIN_FORM = { username: '', password: '' }
-const REGISTER_FORM = { username: '', password: '', confirmPassword: '' }
 
 export default function LoginPage() {
-  const { login }   = useAuth()
-  const navigate    = useNavigate()
-  const [mode, setMode]       = useState('login')
-  const [form, setForm]       = useState(LOGIN_FORM)
-  const [success, setSuccess] = useState('')
-  const [error, setError]     = useState('')
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const [form, setForm] = useState(LOGIN_FORM)
+  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const isRegisterMode = mode === 'register'
 
-  const switchMode = () => {
-    setMode((current) => (current === 'login' ? 'register' : 'login'))
-    setForm(mode === 'login' ? REGISTER_FORM : LOGIN_FORM)
-    setError('')
-    setSuccess('')
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    setForm((current) => ({ ...current, [name]: value }))
+    if (error) setError('')
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!form.username.trim() || !form.password) {
-      setError('Completa todos los campos.')
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const username = form.username.trim()
+    const password = form.password
+
+    if (!username) {
+      setError('Ingresa tu usuario.')
       return
     }
-    if (isRegisterMode && form.password !== form.confirmPassword) {
-      setError('Las contraseñas no coinciden.')
-      return
-    }
-    if (isRegisterMode && form.password.trim().length < 4) {
-      setError('La contraseña debe tener al menos 4 caracteres.')
+
+    if (!password) {
+      setError('Ingresa tu contraseña.')
       return
     }
 
     setLoading(true)
     setError('')
-    setSuccess('')
+
     try {
-      if (isRegisterMode) {
-        await createUsuario({
-          username: form.username.trim(),
-          password: form.password,
-        })
-        setSuccess('Usuario creado correctamente. Ya puedes iniciar sesión.')
-        setMode('login')
-        setForm({ username: form.username.trim(), password: '' })
+      await login(username, password)
+      navigate('/dashboard', { replace: true })
+    } catch (err) {
+      if (!err.response) {
+        setError('No se pudo conectar con el servidor. Intenta nuevamente.')
         return
       }
 
-      await login(form.username.trim(), form.password)
-      navigate('/clientes')
-    } catch (err) {
-      setError(
-        err.response?.data?.message ||
-        (isRegisterMode ? 'No se pudo crear el usuario.' : 'Usuario o contraseña incorrectos.')
-      )
+      setError('Usuario o contraseña incorrectos.')
     } finally {
       setLoading(false)
     }
@@ -67,82 +53,74 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="form-card login-card">
-        <h1 className="page-title login-title">TiendaApp</h1>
-        <p className="page-subtitle login-subtitle">
-          {isRegisterMode ? 'Crea tu usuario para ingresar' : 'Inicia sesión para continuar'}
-        </p>
+      <section className="login-shell" aria-label="Acceso interno">
+        <div className="login-brand-panel">
+          <Link to="/" className="login-store-link">
+            Volver a la tienda
+          </Link>
+          <span className="login-kicker">Área privada para colaboradores</span>
+          <h1>Acceso al Sistema</h1>
+          <p>
+            Ingresa con tu usuario autorizado para administrar Bebidas y Abarrotes S.A.
+          </p>
+          <div className="login-support-box">
+            <strong>Bebidas y Abarrotes S.A.</strong>
+            <span>Gestión interna de clientes, inventario, ventas y reportes.</span>
+          </div>
+        </div>
 
-        {success && (
-          <div className="alert alert-success" style={{ marginBottom:'1rem' }}>
-            <span className="alert-icon">✓</span>
-            <p>{success}</p>
+        <div className="login-card">
+          <div className="login-card-header">
+            <span className="login-card-mark" aria-hidden="true">BA</span>
+            <div>
+              <h2>Ingreso autorizado</h2>
+              <p>Usa las credenciales asignadas por administración.</p>
+            </div>
           </div>
-        )}
 
-        {error && (
-          <div className="alert alert-error" style={{ marginBottom:'1rem' }}>
-            <span className="alert-icon">⚠</span>
-            <p>{error}</p>
-          </div>
-        )}
+          {error && (
+            <div className="login-alert" role="alert">
+              {error}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Usuario</label>
-            <input
-              className="form-input"
-              placeholder="tu_usuario"
-              value={form.username}
-              onChange={e => setForm(f => ({ ...f, username: e.target.value }))}
-              autoFocus
-              disabled={loading}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Contraseña</label>
-            <input
-              type="password"
-              className="form-input"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-              disabled={loading}
-            />
-          </div>
-          {isRegisterMode && (
+          <form onSubmit={handleSubmit} noValidate>
             <div className="form-group">
-              <label className="form-label">Confirmar contraseña</label>
+              <label className="form-label" htmlFor="login-username">Usuario</label>
               <input
-                type="password"
+                id="login-username"
+                name="username"
                 className="form-input"
-                placeholder="••••••••"
-                value={form.confirmPassword}
-                onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
+                placeholder="admin"
+                autoComplete="username"
+                value={form.username}
+                onChange={handleChange}
+                autoFocus
                 disabled={loading}
               />
             </div>
-          )}
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={loading}
-          >
-            {loading
-              ? (isRegisterMode ? 'Creando...' : 'Entrando...')
-              : (isRegisterMode ? 'Crear usuario' : 'Entrar')}
-          </button>
-        </form>
 
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={switchMode}
-          disabled={loading}
-        >
-          {isRegisterMode ? 'Ya tengo usuario' : 'No tengo usuario, crear cuenta'}
-        </button>
-      </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="login-password">Contraseña</label>
+              <input
+                id="login-password"
+                name="password"
+                type="password"
+                className="form-input"
+                placeholder="Ingresa tu contraseña"
+                autoComplete="current-password"
+                value={form.password}
+                onChange={handleChange}
+                disabled={loading}
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary login-submit" disabled={loading}>
+              {loading ? 'Validando acceso...' : 'Ingresar al dashboard'}
+            </button>
+          </form>
+        </div>
+      </section>
     </div>
   )
 }

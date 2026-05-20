@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 
 const links = [
   { to: '/clientes', label: 'Clientes' },
-  { to: '/productos', label: 'Productos' },
+  { to: '/productos-admin', label: 'Productos' },
   { to: '/proveedores', label: 'Proveedores' },
   { to: '/ventas', label: 'Ventas' },
   { to: '/compras', label: 'Compras' },
@@ -20,9 +20,12 @@ function Navbar() {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        <NavLink to="/clientes" className="navbar-brand">
-          <span className="brand-icon" aria-hidden="true">🥤</span>
-          <span>Tienda Central</span>
+        <NavLink to="/dashboard" className="navbar-brand">
+          <span className="brand-icon" aria-hidden="true">BA</span>
+          <span className="brand-copy">
+            <strong>Bebidas y Abarrotes S.A.</strong>
+            <small>Gestión interna</small>
+          </span>
         </NavLink>
 
         <nav className="navbar-links">
@@ -38,10 +41,11 @@ function Navbar() {
         </nav>
 
         <div className="navbar-user">
-          <span className="navbar-user-label">
-            {user?.username ? `@${user.username}${user?.role ? ` · ${user.role}` : ''}` : 'Sesion activa'}
+          <span className="navbar-user-label" title="Usuario activo">
+            <strong>{user?.username || 'Sesion activa'}</strong>
+            {user?.role && <small>{user.role}</small>}
           </span>
-          <button className="btn btn-ghost" onClick={logout}>
+          <button className="btn btn-ghost navbar-logout" onClick={logout}>
             Salir
           </button>
         </div>
