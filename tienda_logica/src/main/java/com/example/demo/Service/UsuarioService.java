@@ -4,6 +4,7 @@ import com.example.demo.DTO.UsuarioCreateDTO;
 import com.example.demo.DTO.UsuarioDTO;
 import com.example.demo.entity.Usuario;
 import com.example.demo.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -11,9 +12,11 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository repository) {
+    public UsuarioService(UsuarioRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UsuarioDTO> listar() {
@@ -39,8 +42,8 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setUsername(username);
 
-        // 🔥 IMPORTANTE: en producción esto debe ir encriptado
-        usuario.setPassword(password);
+        usuario.setPassword(passwordEncoder.encode(password));
+        usuario.setRole("VENTAS");
 
         Usuario guardado = repository.save(usuario);
         return toDTO(guardado);

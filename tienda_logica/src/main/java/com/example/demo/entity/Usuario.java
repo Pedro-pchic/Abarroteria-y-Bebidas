@@ -18,9 +18,9 @@ public class Usuario {
 
     private String username;
     private String password;
+    private String role = "VENTAS";
 
     @OneToMany(mappedBy = "usuario")
     @JsonIgnore
     private List<Venta> ventas;
 }
-
